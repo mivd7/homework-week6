@@ -1,4 +1,3 @@
-// src/db.ts
 import { createConnection } from 'typeorm'
 import { DefaultNamingStrategy } from 'typeorm/naming-strategy/DefaultNamingStrategy'
 import { NamingStrategyInterface } from 'typeorm/naming-strategy/NamingStrategyInterface'
