@@ -15,6 +15,10 @@ board1
   .reduce((a, b) => a.concat(b))
   .length
 
+// const makeMove = (board1, board2) =>
+// board1
+//     .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
+//     .reduce((a, b) => a.concat(b))
 
 @JsonController()
 export default class GameController {
@@ -57,14 +61,15 @@ export default class GameController {
                 throw HttpCode(404)
                 new NotFoundError('Error: Game not found!')
     
-            if (updateGame.board) {
-                if (moves(game.board, updateGame.board) > 1) { 
+            if (updateGame.board && game.board) {
+                if (moves(game.board, updateGame.board).length > 1) { 
                     HttpCode(400) 
                     new BadRequestError('Invalid move: only 1 move at a time allowed!')
                 } else {
                     return Game.merge(game, updateGame).save()
                 }
             } 
+            
             return Game.merge(game, updateGame).save()  
     }
 }
