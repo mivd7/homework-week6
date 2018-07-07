@@ -11,26 +11,26 @@ var __metadata = (this && this.__metadata) || function (k, v) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const typeorm_1 = require("typeorm");
 const BaseEntity_1 = require("typeorm/repository/BaseEntity");
-let Users = class Users extends BaseEntity_1.BaseEntity {
+let Game = class Game extends BaseEntity_1.BaseEntity {
 };
 __decorate([
     typeorm_1.PrimaryGeneratedColumn(),
     __metadata("design:type", Number)
-], Users.prototype, "id", void 0);
+], Game.prototype, "id", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: false }),
     __metadata("design:type", String)
-], Users.prototype, "first_name", void 0);
+], Game.prototype, "name", void 0);
 __decorate([
     typeorm_1.Column('text', { nullable: false }),
     __metadata("design:type", String)
-], Users.prototype, "last_name", void 0);
+], Game.prototype, "color", void 0);
 __decorate([
-    typeorm_1.Column('text', { nullable: false }),
-    __metadata("design:type", String)
-], Users.prototype, "email", void 0);
-Users = __decorate([
+    typeorm_1.Column('json', { nullable: false }),
+    __metadata("design:type", Object)
+], Game.prototype, "board", void 0);
+Game = __decorate([
     typeorm_1.Entity()
-], Users);
-exports.default = Users;
+], Game);
+exports.default = Game;
 //# sourceMappingURL=entity.js.map

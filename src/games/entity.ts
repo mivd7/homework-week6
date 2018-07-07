@@ -7,10 +7,10 @@ export default class Game extends BaseEntity {
   @PrimaryGeneratedColumn()
   id?: number
 
-  @Column('text', {nullable:false})
+  @Column('text')
   name: string
 
-  @Column('text', {nullable:false})
+  @Column('text',)
   color: string
 
   @Column('json', {nullable:false})
