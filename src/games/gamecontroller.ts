@@ -79,9 +79,9 @@ export default class GameController {
                         }
                     }
                 newMove()
+                }
             } 
         } 
-    }
         //
 //       @Put('/games/:id')
 //       async makeMove(
