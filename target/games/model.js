@@ -9,31 +9,23 @@ var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const typeorm_1 = require("typeorm");
-const BaseEntity_1 = require("typeorm/repository/BaseEntity");
 const class_validator_1 = require("class-validator");
-let Game = class Game extends BaseEntity_1.BaseEntity {
-};
+const validator_1 = require("./validator");
+class Model {
+}
 __decorate([
-    typeorm_1.PrimaryGeneratedColumn(),
-    __metadata("design:type", Number)
-], Game.prototype, "id", void 0);
-__decorate([
-    typeorm_1.Column('text'),
-    class_validator_1.IsString(),
+    class_validator_1.IsString({ message: "Must be a string" }),
     __metadata("design:type", String)
-], Game.prototype, "name", void 0);
+], Model.prototype, "name", void 0);
 __decorate([
-    typeorm_1.Column('text'),
-    class_validator_1.IsString(),
+    class_validator_1.IsIn(["Red", "Blue", "Green", "Yellow", "Magenta"], {
+        message: 'sorry not a valid color'
+    }),
     __metadata("design:type", String)
-], Game.prototype, "color", void 0);
+], Model.prototype, "color", void 0);
 __decorate([
-    typeorm_1.Column('json'),
+    class_validator_1.Validate(validator_1.Validator),
     __metadata("design:type", Array)
-], Game.prototype, "board", void 0);
-Game = __decorate([
-    typeorm_1.Entity()
-], Game);
-exports.default = Game;
-//# sourceMappingURL=entity.js.map
+], Model.prototype, "board", void 0);
+exports.default = Model;
+//# sourceMappingURL=model.js.map

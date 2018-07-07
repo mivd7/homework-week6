@@ -19,11 +19,20 @@ const defaultBoard = [
     ['o', 'o', 'o'],
     ['o', 'o', 'o']
 ];
-const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Magenta'];
+const allowedColors = ['Red', 'Blue', 'Green', 'Yellow', 'Magenta'];
 const moves = (board1, board2) => board1
     .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
     .reduce((a, b) => a.concat(b))
     .length;
+console.log(moves([
+    ['o', 'o', 'o'],
+    ['o', 'o', 'o'],
+    ['o', 'o', 'o']
+], [
+    ['o', 'o', 'o'],
+    ['o', 'X', 'o'],
+    ['o', 'o', 'o']
+]));
 let GameController = class GameController {
     async allGames() {
         const games = await entity_1.default.find();
@@ -31,7 +40,7 @@ let GameController = class GameController {
     }
     async createGame(name) {
         const randomColor = () => {
-            return colors[Math.floor(Math.random() * colors.length)];
+            return allowedColors[Math.floor(Math.random() * allowedColors.length)];
         };
         const newGame = new entity_1.default();
         newGame.name = name;
@@ -39,21 +48,24 @@ let GameController = class GameController {
         newGame.board = JSON.parse(JSON.stringify(defaultBoard));
         return newGame.save();
     }
-    async updateGame(id, update) {
+    async makeMove(id, updateGame) {
         const game = await entity_1.default.findOne(id);
-        if (!game)
-            throw new routing_controllers_1.NotFoundError('Cannot find game!');
-        if (update.board) {
-            if (moves(game.board, update.board) > 1) {
-                throw new routing_controllers_1.BadRequestError('invalid quantitie of moves');
+        const newMove = () => {
+            if (!game)
+                throw routing_controllers_1.HttpCode(404);
+            new routing_controllers_1.NotFoundError('Error: Game not found!');
+            if (moves(game.board, updateGame.board)) {
+                if (moves.length > 1) {
+                    routing_controllers_1.HttpCode(400);
+                    new routing_controllers_1.BadRequestError('Invalid move: only 1 move at a time allowed!');
+                }
+                else {
+                    return updateGame.board && entity_1.default.merge(game, updateGame).save();
+                }
             }
-            else {
-                return entity_1.default.merge(game, update).save();
-            }
-        }
-        else {
-            return entity_1.default.merge(game, update).save();
-        }
+            newMove();
+            return updateGame.board;
+        };
     }
 };
 __decorate([
@@ -77,7 +89,7 @@ __decorate([
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Number, Object]),
     __metadata("design:returntype", Promise)
-], GameController.prototype, "updateGame", null);
+], GameController.prototype, "makeMove", null);
 GameController = __decorate([
     routing_controllers_1.JsonController()
 ], GameController);
