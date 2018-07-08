@@ -1,7 +1,6 @@
-import { JsonController, Get, Param, Post, HttpCode, BodyParam, Put, NotFoundError, Body, BadRequestError } from 'routing-controllers'
-// import {validate} from 'class-validator'
+import { JsonController, Get, Param, Post, HttpCode, BodyParam, Put, NotFoundError, Body, BadRequestError} from 'routing-controllers'
 import Game from './entity'
-// import GameModel from './model';
+import { Validator } from 'class-validator';
 
 const defaultBoard = [
 	['o', 'o', 'o'],
@@ -9,24 +8,9 @@ const defaultBoard = [
 	['o', 'o', 'o']
 ]
 
-const allowedColors = ['Red', 'Blue', 'Green', 'Yellow', 'Magenta']
+const colors = ['Red', 'Blue', 'Green', 'Yellow', 'Magenta']
 
-const moves = (board1, board2) => 
-board1
-  .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
-  .reduce((a, b) => a.concat(b))
-  .length
-
-console.log(moves([
-	['o', 'o', 'o'],
-	['o', 'o', 'o'],
-	['o', 'o', 'o']
-],[
-	['o', 'o', 'o'],
-	['o', 'X', 'o'],
-	['o', 'o', 'o']
-])
-)
+const validator = new Validator
 
 @JsonController()
 export default class GameController {
@@ -49,7 +33,7 @@ export default class GameController {
        async createGame(
     @BodyParam('name') name : string,
     ) { const randomColor = () => {
-            return allowedColors[Math.floor(Math.random()* allowedColors.length)]
+            return colors[Math.floor(Math.random()* colors.length)]
         }
         const newGame = new Game()
         newGame.name = name
@@ -59,49 +43,43 @@ export default class GameController {
         return newGame.save()
       }
       
-@Put('/games/:id')
-    async makeMove(
+      @Put('/games/:id')
+      async makeMove(
         @Param('id') id: number,
-        @BodyParam('board') board: string,
+        @BodyParam('color') color: string,
         @Body() updateGame: Partial<Game>
-        ) {
+        ) : Promise<Game> {
             const game = await Game.findOne(id)
-            const newMove = () => {
                 if (!game) 
-                    throw new NotFoundError('Error: Game not found!')
-        
-                if (game && moves(board, updateGame.board)) {
-                    if (moves.length > 1) {
-                        throw new BadRequestError('Invalid move: only 1 move at a time allowed!')
-                    } else {
-                        const newBoard = updateGame.board && Game.merge(game, updateGame).save()
-                        return newBoard
-                        }
-                    }
-                newMove()
-                }
-            } 
-        } 
-        //
-//       @Put('/games/:id')
-//       async makeMove(
-//         @Param('id') id: number,
-//         @Body() updateGame: Partial<Game>
-//         ) : Promise<Game> {
-//             const game = await Game.findOne(id)
-//             if (!game) 
-//                 throw HttpCode(404)
-//                 new NotFoundError('Error: Game not found!')
+                throw new NotFoundError('Error: Game not found!')
     
-//             if (updateGame.board && game.board) {
-//                 if (moves(game.board, updateGame.board).length > 1) { 
-//                     HttpCode(400) 
-//                     new BadRequestError('Invalid move: only 1 move at a time allowed!')
-//                 } else {
-//                     return Game.merge(game, updateGame).save()
-//                 }
-//             } 
+                if (validator.isNotIn(color, colors)) 
+                throw new BadRequestError('Sorry, that is not a valid color!')
+
+                const moves = (board1, board2) =>
+                        board1
+                            .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
+                            .reduce((a, b) => a.concat(b))
+                            .length
+
+                if (updateGame.board == undefined) 
+                    return Game.merge(game, updateGame).save()
+                
+                if (moves(game.board, updateGame.board) !== 1) 
+                    throw new BadRequestError('Illegal move: only 1 move at a time please!')
+                
+            return Game.merge(game, updateGame).save()  
+            }
+        }
             
-//             return Game.merge(game, updateGame).save()  
-//     }
-// }
+            
+// const moves = (board1, board2) =>
+//       board1
+//         .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
+//         .reduce((a, b) => a.concat(b))
+//         .length
+//     if (update.board == undefined) return Game.merge(game, update).save()
+//     if (moves(game.board, update.board) !== 1) throw new NotFoundError('Too many moves1')
+
+
+//     return Game.merge(game, update).save()

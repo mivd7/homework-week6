@@ -24,19 +24,13 @@ const moves = (board1, board2) => board1
     .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
     .reduce((a, b) => a.concat(b))
     .length;
-console.log(moves([
-    ['o', 'o', 'o'],
-    ['o', 'o', 'o'],
-    ['o', 'o', 'o']
-], [
-    ['o', 'o', 'o'],
-    ['o', 'X', 'o'],
-    ['o', 'o', 'o']
-]));
 let GameController = class GameController {
     async allGames() {
         const games = await entity_1.default.find();
         return { games };
+    }
+    getGame(id) {
+        return entity_1.default.findOne(id);
     }
     async createGame(name) {
         const randomColor = () => {
@@ -48,23 +42,21 @@ let GameController = class GameController {
         newGame.board = JSON.parse(JSON.stringify(defaultBoard));
         return newGame.save();
     }
-    async makeMove(id, updateGame) {
+    async makeMove(id, board, updateGame) {
         const game = await entity_1.default.findOne(id);
         const newMove = () => {
             if (!game)
-                throw routing_controllers_1.HttpCode(404);
-            new routing_controllers_1.NotFoundError('Error: Game not found!');
-            if (moves(game.board, updateGame.board)) {
+                throw new routing_controllers_1.NotFoundError('Error: Game not found!');
+            if (game && moves(board, updateGame.board)) {
                 if (moves.length > 1) {
-                    routing_controllers_1.HttpCode(400);
-                    new routing_controllers_1.BadRequestError('Invalid move: only 1 move at a time allowed!');
+                    throw new routing_controllers_1.BadRequestError('Invalid move: only 1 move at a time allowed!');
                 }
                 else {
-                    return updateGame.board && entity_1.default.merge(game, updateGame).save();
+                    const newBoard = entity_1.default.merge(game, updateGame).save();
+                    return newBoard;
                 }
             }
             newMove();
-            return updateGame.board;
         };
     }
 };
@@ -74,6 +66,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", Promise)
 ], GameController.prototype, "allGames", null);
+__decorate([
+    routing_controllers_1.Get('/games/:id'),
+    __param(0, routing_controllers_1.Param('id')),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Number]),
+    __metadata("design:returntype", void 0)
+], GameController.prototype, "getGame", null);
 __decorate([
     routing_controllers_1.Post('/games'),
     routing_controllers_1.HttpCode(201),
@@ -85,9 +84,10 @@ __decorate([
 __decorate([
     routing_controllers_1.Put('/games/:id'),
     __param(0, routing_controllers_1.Param('id')),
-    __param(1, routing_controllers_1.Body()),
+    __param(1, routing_controllers_1.BodyParam('board')),
+    __param(2, routing_controllers_1.Body()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Number, Object]),
+    __metadata("design:paramtypes", [Number, String, Object]),
     __metadata("design:returntype", Promise)
 ], GameController.prototype, "makeMove", null);
 GameController = __decorate([
