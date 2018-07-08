@@ -45,31 +45,30 @@ async createGame(
 }
       
 @Put('/games/:id')
-    async makeMove(
-    @Param('id') id: number,
-    @BodyParam('color') color: string,
-    @Body() updateGame: Partial<Game>
-    ) : Promise<Game> {
-        const game = await Game.findOne(id)
-
-            if (!game) 
+      async makeMove(
+        @Param('id') id: number,
+        @Body() updateGame: Partial<Game>
+        ) : Promise<Game> {
+            const game = await Game.findOne(id)
+                
+                if (!game) 
                 throw new NotFoundError('Error: Game not found!')
     
-            if (validator.isNotIn(color, colors)) 
+                if (validator.isNotIn(updateGame.color, colors)) 
                 throw new BadRequestError('Sorry, that is not a valid color!')
 
-            const moves = (board1, board2) =>
-                board1
-                    .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
-                    .reduce((a, b) => a.concat(b))
-                    .length
+                const moves = (board1, board2) =>
+                        board1
+                            .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
+                            .reduce((a, b) => a.concat(b))
+                            .length
 
-            if (updateGame.board == undefined) 
-                return Game.merge(game, updateGame).save()
+                if (updateGame.board == undefined) 
+                    return Game.merge(game, updateGame).save()
                 
-            if (moves(game.board, updateGame.board) !== 1) 
-                throw new BadRequestError('Illegal move: only 1 move at a time please!')
+                if (moves(game.board, updateGame.board) !== 1) 
+                    throw new BadRequestError('Illegal move: only 1 move at a time please!')
                 
-        return Game.merge(game, updateGame).save()  
-    }
-}
+            return Game.merge(game, updateGame).save()  
+            }
+        }
