@@ -66,8 +66,8 @@ async createGame(
                 if (updateGame.board == undefined) 
                     return Game.merge(game, updateGame).save()
                 
-                if (moves(game.board, updateGame.board) !== 1) 
-                    throw new BadRequestError('Illegal move: only 1 move at a time please!')
+                if (moves(game.board, updateGame.board) > 1) 
+                    throw new BadRequestError('Illegal move: only 1 move per  please!')
                 
             return Game.merge(game, updateGame).save()  
             }
