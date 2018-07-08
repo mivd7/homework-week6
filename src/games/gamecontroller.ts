@@ -16,32 +16,33 @@ const validator = new Validator
 export default class GameController {
 
 @Get('/games')
-    async allGames() {
-      const games = await Game.find()
-      return { games }
-    }
+async allGames() {
+    const games = await Game.find()
+    return { games }
+}
 
 @Get('/games/:id')
-    getGame(
-    @Param('id') id: number
+getGame(
+@Param('id') id: number
     ) {
       return Game.findOne(id)
+}
+
+@Post('/games')
+@HttpCode(201)
+async createGame(
+@BodyParam('name') name : string,
+) { const randomColor = () => {
+    return colors[Math.floor(Math.random()* colors.length)]
     }
+        
+    const newGame = new Game()
+    newGame.name = name
+    newGame.color = randomColor()
+    newGame.board = JSON.parse(JSON.stringify(defaultBoard))
 
-    @Post('/games')
-    @HttpCode(201)
-       async createGame(
-    @BodyParam('name') name : string,
-    ) { const randomColor = () => {
-            return colors[Math.floor(Math.random()* colors.length)]
-        }
-        const newGame = new Game()
-        newGame.name = name
-        newGame.color = randomColor()
-        newGame.board = JSON.parse(JSON.stringify(defaultBoard))
-
-        return newGame.save()
-      }
+    return newGame.save()
+}
       
 @Put('/games/:id')
     async makeMove(
