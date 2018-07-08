@@ -50,11 +50,12 @@ export default class GameController {
         @Body() updateGame: Partial<Game>
         ) : Promise<Game> {
             const game = await Game.findOne(id)
+
                 if (!game) 
-                throw new NotFoundError('Error: Game not found!')
+                    throw new NotFoundError('Error: Game not found!')
     
                 if (validator.isNotIn(color, colors)) 
-                throw new BadRequestError('Sorry, that is not a valid color!')
+                    throw new BadRequestError('Sorry, that is not a valid color!')
 
                 const moves = (board1, board2) =>
                         board1
@@ -71,15 +72,3 @@ export default class GameController {
             return Game.merge(game, updateGame).save()  
             }
         }
-            
-            
-// const moves = (board1, board2) =>
-//       board1
-//         .map((row, y) => row.filter((cell, x) => board2[y][x] !== cell))
-//         .reduce((a, b) => a.concat(b))
-//         .length
-//     if (update.board == undefined) return Game.merge(game, update).save()
-//     if (moves(game.board, update.board) !== 1) throw new NotFoundError('Too many moves1')
-
-
-//     return Game.merge(game, update).save()
