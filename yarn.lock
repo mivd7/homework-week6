@@ -2151,6 +2151,12 @@ ts-node@^7.0.0:
     source-map-support "^0.5.6"
     yn "^2.0.0"
 
+tsc-node@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/tsc-node/-/tsc-node-0.0.3.tgz#3e2619907636644b4fc6a3c2d66026f9f665a9da"
+  dependencies:
+    typescript "^2.1.5"
+
 tsc@^1.20150623.0:
   version "1.20150623.0"
   resolved "https://registry.yarnpkg.com/tsc/-/tsc-1.20150623.0.tgz#4ebc3c774e169148cbc768a7342533f082c7a6e5"
@@ -2184,7 +2190,7 @@ typeorm@^0.2.7:
     yargonaut "^1.1.2"
     yargs "^11.1.0"
 
-typescript@^2.9.2:
+typescript@^2.1.5, typescript@^2.9.2:
   version "2.9.2"
   resolved "https://registry.yarnpkg.com/typescript/-/typescript-2.9.2.tgz#1cbf61d05d6b96269244eb6a3bce4bd914e0f00c"
 
